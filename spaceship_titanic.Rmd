@@ -1,0 +1,37 @@
+---
+title: "spaceship_titanic"
+author: "Jade Gregory"
+date: "2024-04-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+```{r}
+shiptest <- read.csv("test.csv")
+shiptrain <- read.csv("train.csv")
+c(dim(shiptrain), dim(shiptest))
+head(shiptrain)
+```
+```{r}
+length(shiptrain$Transported[shiptrain$Transported == "True"]) / length(shiptrain$Transported)
+length(shiptrain$Transported[shiptrain$Transported == "False"]) / length(shiptrain$Transported)
+```
+
+Our response variable is Transported, denoted True or False. Transported is True 50.36% of the time and false 49.64% of the time. 
+
+```{r}
+# convert to factor for glm 
+shiptrain <- shiptrain %>%
+  mutate(across(where(is.character), as.factor))
+
+head(shiptrain)
+```
+```{r}
+glmshiptrain <- glm(Transported ~ . - PassengerId - Transported, data = shiptrain, family = binomial())
+summary(glmshiptrain) 
+```
+
